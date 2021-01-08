@@ -1,20 +1,40 @@
-class EulerEstimator:
-    def __init__(self, derivative):
-        self.function = derivative
-    
-    def calc_derivative_at_point(self, point):
-        return self.function(point[0])
-    def step_forward(self, point, step_size):
-        return (point[0] + step_size, point[1] + (self.calc_derivative_at_point(point) * step_size))
-    def calc_estimated_points(self, point, step_size, num_steps):
-        steps = [point]
-        for current_step in range(num_steps):
-            steps.append(self.step_forward(point, step_size))
-            point = self.step_forward(point, step_size)
-            current_step += 1
-        return steps
+import matplotlib.pyplot as plt
+plt.style.use('bmh')
 
-euler = EulerEstimator(derivative = (lambda t: t + 1))
-print(euler.calc_derivative_at_point((1,4)))
-print(euler.step_forward(point = (1,4), step_size = 0.5))
-print(euler.calc_estimated_points(point=(1,4), step_size=0.5, num_steps=4))
+class EulerEstimator:
+    def __init__(self, derivatives):
+        self.functions = derivatives
+    
+    def calc_derivative_at_point(self, initial_point):
+        result_dict = {}
+        for key in self.functions:
+            result_dict[key] = self.functions[key](initial_point[0],initial_point[1])
+            
+        return result_dict
+
+    def step_forward(self, point, step_size):
+        new_dict = {}
+        old_point = point[0]
+        derivs = self.calc_derivative_at_point(point)
+        for key in point[1]:
+            new_dict[key] =  round(point[1][key]+step_size*derivs[key],2)
+        return (old_point + step_size, new_dict)
+
+    def calc_estimated_points(self, point, step_size, num_steps):
+        points_list = [point]
+        for num in range(num_steps):
+            new_point = self.step_forward(point,step_size)
+            points_list.append(new_point)
+            point = new_point
+        return points_list
+
+    def plot(self, point, step_size, num_steps):
+        points = self.calc_estimated_points(point,step_size,num_steps)
+        x_vals=[]
+        y_vals=[]
+        for point in points:
+            x_vals.append(point[0])
+            y_vals.append(point[1])
+        plt.style.use('bmh')
+        plt.plot(x_vals,y_vals)
+        plt.savefig('euler.png')
