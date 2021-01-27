@@ -28,13 +28,20 @@ class EulerEstimator:
             point = new_point
         return points_list
 
-    def plot(self, point, step_size, num_steps):
-        points = self.calc_estimated_points(point,step_size,num_steps)
+    def plot(self, point, step_size, end_value):
         x_vals=[]
-        y_vals=[]
-        for point in points:
-            x_vals.append(point[0])
-            y_vals.append(point[1])
+        y_vals={}
         plt.style.use('bmh')
-        plt.plot(x_vals,y_vals)
+        for key in point[1]:
+            y_vals[key]=[]
+        while True:
+            if point[0]>end_value:
+                break
+            for key in point[1]:
+                y_vals[key].append(point[1][key])
+            x_vals.append(point[0])
+            point=self.step_forward(point,step_size)
+        
+        for key in y_vals:
+            plt.plot(x_vals,y_vals[key])
         plt.savefig('euler.png')
