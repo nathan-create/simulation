@@ -20,11 +20,9 @@ for num in range(len(t)):
     s_vals.append(susceptible)
     i_vals.append(infected)
     r_vals.append(recovered)
-
     s = copy(susceptible)
     i = copy(infected)
     r = copy(recovered)
-
     susceptible += -0.0003 * i * s
     infected += (0.0003 * s * i) - (0.02 * i)
     recovered += 0.02 * i
